@@ -40,14 +40,6 @@ class WordGraph(object):
                     words.append(cand)
         return words
 
-    @classmethod
-    def hamming(cls, word1, word2):
-        c = 0
-        for i in range(len(word1)):
-            if word1[i] != word2[i]:
-                c += 1
-        return c
-
     def min_path(self, word1, word2):
         visited = {}
         frontier = []
@@ -57,10 +49,24 @@ class WordGraph(object):
             if word == word2:
                 return path
             for adjacent in self.unvisited(word, visited):
-                cost = distance + self.hamming(adjacent, word2)
+                cost = distance + hamming(adjacent, word2)
                 visited[adjacent] = cost
                 heapq.heappush(frontier, (cost, adjacent, path + [adjacent]))
         return None
+
+
+def hamming(word1, word2):
+    """
+    Caculate hamming distances between words.
+
+    >>> hamming('todd', 'john')
+    3
+    """
+    c = 0
+    for i in range(len(word1)):
+        if word1[i] != word2[i]:
+            c += 1
+    return c
 
 
 def min_ladder(words, word1, word2):
