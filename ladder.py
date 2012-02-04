@@ -6,6 +6,7 @@ import sys
 import heapq
 
 DICTIONARY = "dict.txt"
+words_cache = None
 
 
 class WordGraph(object):
@@ -61,6 +62,8 @@ def hamming(word1, word2):
 
     >>> hamming('todd', 'john')
     3
+    >>> hamming('geek', 'wire')
+    4
     """
     c = 0
     for i in range(len(word1)):
@@ -69,9 +72,20 @@ def hamming(word1, word2):
     return c
 
 
-def min_ladder(words, word1, word2):
+def min_ladder(word1, word2, words=None):
+    global words_cache
+
+    if words is None:
+        words = words_cache
+    if words is None:
+        words = [word.strip() for word in open(DICTIONARY).readlines()]
+        words_cache = words
+
     word1 = word1.lower()
     word2 = word2.lower()
+
+    if len(word1) != len(word2):
+        raise Exception("Words must be the same length.")
 
     if word2 not in words:
         print "Warning: %s is not in dictionary." % word2
@@ -85,16 +99,18 @@ def main():
     if len(sys.argv) != 3:
         print "Usage: %s word1 word2" % sys.argv[0]
         exit(1)
-    if len(sys.argv[1]) != len(sys.argv[2]):
-        print "Words must be the same length."
+    try:
+        ladder = min_ladder(sys.argv[1], sys.argv[2])
+    except Exception, e:
+        print e
         exit(1)
-    words = [word.strip() for word in open(DICTIONARY).readlines()]
-    ladder = min_ladder(words, sys.argv[1], sys.argv[2])
+
     if ladder is None:
         print "No known ladder."
         exit(1)
+
     for word in ladder:
-        print word.upper()
+        print "%s (%d)" % (word.upper(), hamming(word, sys.argv[2]))
 
 
 if __name__ == '__main__':
