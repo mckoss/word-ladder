@@ -19,4 +19,3 @@ class TestLadder(unittest.TestCase):
 
     def test_mismatch(self):
         self.assertRaises(Exception, ladder.min_ladder, ('a', 'bar'))
-
